@@ -200,6 +200,7 @@ public class RomFeatureHideHook implements IXposedHookLoadPackage {
                         @Override
                         protected void afterHookedMethod(MethodHookParam param) {
                             if (!shouldFilterCaller()) return;
+                            // Allow a process to resolve its own package name (e.g. system/Lineage/OmniROM apps in Settings)
                             if (param.args[0] instanceof Integer
                                     && ((Integer) param.args[0]).intValue() == Binder.getCallingUid()) {
                                 return;
@@ -218,6 +219,7 @@ public class RomFeatureHideHook implements IXposedHookLoadPackage {
                                 }
                             }
                             if (filtered != null) {
+                                // Return null (not empty array) when all packages were filtered to match AOSP contract
                                 param.setResult(filtered.isEmpty() ? null : filtered.toArray(new String[0]));
                             }
                         }
